@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Manrope:wght@200..800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-fraunces: "Georgia", serif;
+  --font-manrope: "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Courier New", Courier, monospace;
+
+  --color-cream: #FDFCF9;
+  --color-paper: #F4F2EE;
+  --color-ink: #1C1C1C;
+  --color-ink-light: rgba(28, 28, 28, 0.7);
+  --color-accent: #5A5E51;
+  --color-glass: rgba(255, 255, 255, 0.4);
+  --color-border: rgba(0, 0, 0, 0.08);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-cream);
+    background-image: radial-gradient(circle at 50% 50%, var(--color-cream) 0%, var(--color-paper) 100%);
+    color: var(--color-ink);
+    font-family: var(--font-manrope);
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background: var(--color-glass);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+}
