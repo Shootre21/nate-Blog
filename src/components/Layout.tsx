@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { motion } from "motion/react";
 import { cn } from "../lib/utils";
-import { Menu, X, Github } from "lucide-react";
+import { Menu, X, Github, User } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function Layout() {
@@ -32,6 +32,7 @@ export default function Layout() {
           setNavLinks([
             { name: "Home", path: "/" },
             { name: "Blog", path: "/blog" },
+            { name: "Geopolitical", path: "/geopolitics" },
             { name: "Cyber News", path: "/news" },
             { name: "About Me", path: "/about" },
             { name: "Consulting", path: "/work" },
@@ -42,6 +43,7 @@ export default function Layout() {
         setNavLinks([
           { name: "Home", path: "/" },
           { name: "Blog", path: "/blog" },
+          { name: "Geopolitical", path: "/geopolitics" },
           { name: "Cyber News", path: "/news" },
           { name: "About Me", path: "/about" },
           { name: "Consulting", path: "/work" },
@@ -104,6 +106,13 @@ export default function Layout() {
               <Github className="w-5 h-5" />
             </a>
             <Link
+              to="/admin/login"
+              className="text-ink-light hover:text-ink transition-colors"
+              aria-label="Admin Login"
+            >
+              <User className="w-5 h-5" />
+            </Link>
+            <Link
               to="/work"
               className="text-[13px] font-semibold px-4 py-2 rounded border border-border hover:border-ink/30 transition-colors uppercase tracking-[1px]"
             >
@@ -143,6 +152,9 @@ export default function Layout() {
             <a href="https://github.com" className="text-ink-light">
               <Github className="w-6 h-6" />
             </a>
+            <Link to="/admin/login" className="text-ink-light">
+              <User className="w-6 h-6" />
+            </Link>
           </div>
         </motion.div>
       </header>

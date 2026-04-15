@@ -1,30 +1,45 @@
 import { motion, AnimatePresence } from "motion/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Minus, Mail, ArrowRight, Github } from "lucide-react";
 
-const services = [
-  {
-    id: "setup",
-    title: "Basic Security Setup & Vulnerability Check",
-    description: "I will check your current network and software for vulnerabilities, misconfigurations, and exposure. We'll implement basic security hygiene to protect your data without overcomplicating your workflow.",
-    deliverables: ["Network & Software Vulnerability Scan", "Basic Security Setup", "Remediation Checklist"]
-  },
-  {
-    id: "awareness",
-    title: "Low Cost Cybersecurity Awareness",
-    description: "Customized training and resources for your team. We cover password hygiene, phishing awareness, and secure communications in a way that is accessible, actionable, and free of confusing jargon.",
-    deliverables: ["Printouts of what to look for", "Monthly security awareness emails", "Interactive Q&A Session"]
-  },
-  {
-    id: "vCISO",
-    title: "Fractional Security Consulting",
-    description: "Ongoing strategic guidance for organizations that need expert security leadership but cannot afford a full-time hire. I help build security culture, manage vendors, and navigate compliance requirements.",
-    deliverables: ["Monthly Strategy Sessions", "Vendor Risk Assessments", "Policy Development"]
-  }
-];
-
 export default function Work() {
-  const [expandedId, setExpandedId] = useState<string | null>(services[0].id);
+  const [expandedId, setExpandedId] = useState<string | null>("setup");
+  const [pageContent, setPageContent] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/api/pages/work')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.content) {
+          setPageContent(JSON.parse(data.content));
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const intro1 = pageContent?.intro1 || "I provide low cost cybersecurity awareness, and basic security setup for small businesses, non-profits, and independent creators.";
+  const intro2 = pageContent?.intro2 || "My approach is rooted in common-sense defense. I don't sell expensive software; I help you build resilient systems using the tools you already have.";
+
+  const services = [
+    {
+      id: "setup",
+      title: pageContent?.service1Title || "Basic Security Setup & Vulnerability Check",
+      description: pageContent?.service1Desc || "I will check your current network and software for vulnerabilities, misconfigurations, and exposure. We'll implement basic security hygiene to protect your data without overcomplicating your workflow.",
+      deliverables: ["Network & Software Vulnerability Scan", "Basic Security Setup", "Remediation Checklist"]
+    },
+    {
+      id: "awareness",
+      title: pageContent?.service2Title || "Low Cost Cybersecurity Awareness",
+      description: pageContent?.service2Desc || "Customized training and resources for your team. We cover password hygiene, phishing awareness, and secure communications in a way that is accessible, actionable, and free of confusing jargon.",
+      deliverables: ["Printouts of what to look for", "Monthly security awareness emails", "Interactive Q&A Session"]
+    },
+    {
+      id: "vCISO",
+      title: pageContent?.service3Title || "Fractional Security Consulting",
+      description: pageContent?.service3Desc || "Ongoing strategic guidance for organizations that need expert security leadership but cannot afford a full-time hire. I help build security culture, manage vendors, and navigate compliance requirements.",
+      deliverables: ["Monthly Strategy Sessions", "Vendor Risk Assessments", "Policy Development"]
+    }
+  ];
 
   return (
     <motion.div
@@ -38,10 +53,10 @@ export default function Work() {
           <header className="py-16">
             <h1 className="font-fraunces text-4xl md:text-6xl mb-6 italic">Consulting</h1>
             <p className="text-lg text-ink-light leading-relaxed mb-8">
-              I provide low cost cybersecurity awareness, and basic security setup for small businesses, non-profits, and independent creators.
+              {intro1}
             </p>
             <p className="text-ink-light leading-relaxed mb-12">
-              My approach is rooted in common-sense defense. I don't sell expensive software; I help you build resilient systems using the tools you already have.
+              {intro2}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">

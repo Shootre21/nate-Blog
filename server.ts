@@ -5,8 +5,10 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import db from './src/lib/db';
 import path from 'path';
+import Parser from 'rss-parser';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-change-in-prod';
+const rssParser = new Parser();
 
 async function startServer() {
   const app = express();
@@ -99,6 +101,74 @@ async function startServer() {
   app.delete('/api/posts/:id', authenticate, (req, res) => {
     db.prepare('DELETE FROM posts WHERE id = ?').run(req.params.id);
     res.json({ success: true });
+  });
+
+  // Pages
+  app.get('/api/pages', (req, res) => {
+    const pages = db.prepare('SELECT * FROM pages').all();
+    res.json(pages);
+  });
+
+  app.get('/api/pages/:slug', (req, res) => {
+    const page = db.prepare('SELECT * FROM pages WHERE slug = ?').get(req.params.slug);
+    if (!page) {
+      res.status(404).json({ error: 'Page not found' });
+      return;
+    }
+    res.json(page);
+  });
+
+  app.put('/api/pages/:slug', authenticate, (req, res) => {
+    const { title, content } = req.body;
+    const stmt = db.prepare('UPDATE pages SET title=?, content=? WHERE slug=?');
+    stmt.run(title, content, req.params.slug);
+    res.json({ success: true });
+  });
+
+  // RSS Feeds
+  app.get('/api/rss', async (req, res) => {
+    try {
+      const feeds = [
+        'https://www.crisisgroup.org/rss',
+        'https://www.foreignaffairs.com/rss.xml',
+        'https://thediplomat.com/feed',
+        'https://geopoliticalfutures.com/feed'
+      ];
+      
+      const feedPromises = feeds.map(url => 
+        rssParser.parseURL(url).catch(e => {
+          console.error(`Failed to fetch RSS from ${url}:`, e.message);
+          return { items: [] };
+        })
+      );
+      
+      const results = await Promise.all(feedPromises);
+      
+      let allItems: any[] = [];
+      results.forEach((result: any) => {
+        if (result && result.items) {
+          // Add source title to items
+          const sourceTitle = result.title || 'Geopolitics News';
+          const itemsWithSource = result.items.slice(0, 5).map((item: any) => ({
+            ...item,
+            source: sourceTitle
+          }));
+          allItems = allItems.concat(itemsWithSource);
+        }
+      });
+      
+      // Sort by date descending
+      allItems.sort((a, b) => {
+        const dateA = new Date(a.pubDate || a.isoDate || 0).getTime();
+        const dateB = new Date(b.pubDate || b.isoDate || 0).getTime();
+        return dateB - dateA;
+      });
+      
+      res.json(allItems.slice(0, 20));
+    } catch (error) {
+      console.error('RSS Error:', error);
+      res.status(500).json({ error: 'Failed to fetch RSS feeds' });
+    }
   });
 
   // --- Vite Middleware ---

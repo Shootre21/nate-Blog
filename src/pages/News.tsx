@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { ExternalLink, ShieldAlert, ShieldCheck, Terminal } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const newsItems = [
   {
@@ -59,6 +60,21 @@ const getIcon = (type: string) => {
 };
 
 export default function News() {
+  const [pageContent, setPageContent] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/api/pages/news')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.content) {
+          setPageContent(JSON.parse(data.content));
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const intro = pageContent?.intro || "A curated feed of the latest threats, vulnerabilities, and privacy updates you need to know about.";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -69,7 +85,7 @@ export default function News() {
       <header className="py-16 max-w-3xl">
         <h1 className="font-fraunces text-4xl md:text-6xl mb-6 italic">Cybersecurity News</h1>
         <p className="text-lg text-ink-light leading-relaxed">
-          A curated feed of the latest threats, vulnerabilities, and privacy updates you need to know about.
+          {intro}
         </p>
       </header>
 

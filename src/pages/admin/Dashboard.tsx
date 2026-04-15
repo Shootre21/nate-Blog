@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { LogOut, FileText, Navigation, Settings, Plus, Trash2, Edit } from 'lucide-react';
+import { LogOut, FileText, Navigation, Settings, Plus, Trash2, Edit, LayoutTemplate } from 'lucide-react';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -42,6 +42,12 @@ export default function Dashboard() {
             <FileText className="w-4 h-4" /> Posts
           </button>
           <button 
+            onClick={() => setActiveTab('pages')}
+            className={`w-full flex items-center gap-3 px-4 py-2 rounded text-left transition-colors ${activeTab === 'pages' ? 'bg-ink text-cream' : 'hover:bg-border/50'}`}
+          >
+            <LayoutTemplate className="w-4 h-4" /> Pages
+          </button>
+          <button 
             onClick={() => setActiveTab('nav')}
             className={`w-full flex items-center gap-3 px-4 py-2 rounded text-left transition-colors ${activeTab === 'nav' ? 'bg-ink text-cream' : 'hover:bg-border/50'}`}
           >
@@ -65,6 +71,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="flex-grow p-10 overflow-y-auto">
         {activeTab === 'posts' && <PostsManager />}
+        {activeTab === 'pages' && <PagesManager />}
         {activeTab === 'nav' && <NavManager />}
       </main>
     </div>
@@ -124,7 +131,21 @@ function PostsManager() {
             </div>
             <div>
               <label className="block font-mono text-xs mb-1">CATEGORY</label>
-              <input type="text" value={currentPost.category || ''} onChange={e => setCurrentPost({...currentPost, category: e.target.value})} className="w-full p-2 border border-border rounded" required />
+              <input 
+                type="text" 
+                list="categories"
+                value={currentPost.category || ''} 
+                onChange={e => setCurrentPost({...currentPost, category: e.target.value})} 
+                className="w-full p-2 border border-border rounded" 
+                required 
+                placeholder="e.g. Technology, Geopolitics"
+              />
+              <datalist id="categories">
+                <option value="Technology" />
+                <option value="Geopolitics" />
+                <option value="Personal" />
+                <option value="Security" />
+              </datalist>
             </div>
           </div>
           <div>
@@ -167,6 +188,117 @@ function PostsManager() {
             <div className="flex gap-2">
               <button onClick={() => { setCurrentPost(post); setIsEditing(true); }} className="p-2 hover:bg-border/50 rounded"><Edit className="w-4 h-4" /></button>
               <button onClick={() => handleDelete(post.id)} className="p-2 hover:bg-red-50 text-red-500 rounded"><Trash2 className="w-4 h-4" /></button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+function PagesManager() {
+  const [pages, setPages] = useState<any[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentPage, setCurrentPage] = useState<any>({});
+  const [parsedContent, setParsedContent] = useState<any>({});
+
+  useEffect(() => {
+    fetchPages();
+  }, []);
+
+  const fetchPages = () => {
+    fetch('/api/pages').then(res => res.json()).then(setPages);
+  };
+
+  const handleEdit = (page: any) => {
+    setCurrentPage(page);
+    try {
+      setParsedContent(JSON.parse(page.content));
+    } catch (e) {
+      setParsedContent({ raw: page.content });
+    }
+    setIsEditing(true);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const updatedPage = {
+      ...currentPage,
+      content: JSON.stringify(parsedContent)
+    };
+    
+    await fetch(`/api/pages/${currentPage.slug}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedPage)
+    });
+    
+    setIsEditing(false);
+    fetchPages();
+  };
+
+  if (isEditing) {
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="font-fraunces text-3xl">Edit Page: {currentPage.title}</h2>
+          <button onClick={() => setIsEditing(false)} className="text-ink-light hover:text-ink">Cancel</button>
+        </div>
+        <form onSubmit={handleSave} className="space-y-4 glass-panel p-6">
+          <div>
+            <label className="block font-mono text-xs mb-1">PAGE TITLE</label>
+            <input type="text" value={currentPage.title || ''} onChange={e => setCurrentPage({...currentPage, title: e.target.value})} className="w-full p-2 border border-border rounded" required />
+          </div>
+          
+          <div className="pt-4 border-t border-border">
+            <h3 className="font-medium mb-4">Page Content</h3>
+            {Object.keys(parsedContent).map(key => (
+              <div key={key} className="mb-4">
+                <label className="block font-mono text-xs mb-1 uppercase">{key}</label>
+                {typeof parsedContent[key] === 'string' ? (
+                  <textarea 
+                    value={parsedContent[key]} 
+                    onChange={e => setParsedContent({...parsedContent, [key]: e.target.value})} 
+                    className="w-full p-2 border border-border rounded h-24" 
+                  />
+                ) : (
+                  <textarea 
+                    value={JSON.stringify(parsedContent[key], null, 2)} 
+                    onChange={e => {
+                      try {
+                        setParsedContent({...parsedContent, [key]: JSON.parse(e.target.value)})
+                      } catch(err) {
+                        // ignore invalid json while typing
+                      }
+                    }} 
+                    className="w-full p-2 border border-border rounded h-48 font-mono text-xs" 
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <button type="submit" className="bg-ink text-cream px-6 py-2 rounded">Save Page</button>
+        </form>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="font-fraunces text-3xl">Pages</h2>
+      </div>
+
+      <div className="grid gap-4">
+        {pages.map(page => (
+          <div key={page.slug} className="glass-panel p-4 flex justify-between items-center">
+            <div>
+              <h3 className="font-medium text-lg">{page.title}</h3>
+              <p className="font-mono text-xs text-ink-light mt-1">/{page.slug === 'home' ? '' : page.slug}</p>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => handleEdit(page)} className="p-2 hover:bg-border/50 rounded"><Edit className="w-4 h-4" /></button>
             </div>
           </div>
         ))}

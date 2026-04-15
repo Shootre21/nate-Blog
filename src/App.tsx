@@ -10,6 +10,7 @@ import Blog from "./pages/Blog";
 import About from "./pages/About";
 import Work from "./pages/Work";
 import News from "./pages/News";
+import Geopolitics from "./pages/Geopolitics";
 import Login from "./pages/admin/Login";
 import Dashboard from "./pages/admin/Dashboard";
 
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="blog" element={<Blog />} />
+          <Route path="geopolitics" element={<Geopolitics />} />
           <Route path="news" element={<News />} />
           <Route path="about" element={<About />} />
           <Route path="work" element={<Work />} />

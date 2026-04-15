@@ -20,6 +20,7 @@ const item = {
 
 export default function Home() {
   const [recentPosts, setRecentPosts] = useState<any[]>([]);
+  const [pageContent, setPageContent] = useState<any>(null);
 
   useEffect(() => {
     fetch('/api/posts')
@@ -30,7 +31,20 @@ export default function Home() {
         }
       })
       .catch(console.error);
+
+    fetch('/api/pages/home')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.content) {
+          setPageContent(JSON.parse(data.content));
+        }
+      })
+      .catch(console.error);
   }, []);
+
+  const heroTitle = pageContent?.heroTitle || "Thoughts on\ntech, security,\nand life.";
+  const heroText = pageContent?.heroText || "I'm Nate, a cybersecurity professional and Oregon State University alum. This is my personal corner of the internet where I write about technology, everyday observations, and my consulting work.";
+  const quickThought = pageContent?.quickThought || "\"Just finished migrating my home server to a new NAS setup. There's something incredibly satisfying about organizing your own digital space...\"";
 
   return (
     <motion.div
@@ -47,14 +61,12 @@ export default function Home() {
           HELLO_WORLD: WELCOME
         </motion.div>
         
-        <motion.h1 variants={item} className="font-fraunces text-[64px] md:text-[82px] leading-[0.95] font-normal mb-6 italic text-balance">
-          Thoughts on<br />
-          tech, security,<br />
-          and life.
+        <motion.h1 variants={item} className="font-fraunces text-[64px] md:text-[82px] leading-[0.95] font-normal mb-6 italic text-balance whitespace-pre-line">
+          {heroTitle}
         </motion.h1>
         
         <motion.p variants={item} className="text-[18px] leading-[1.6] max-w-[500px] text-black/70 mb-8">
-          I'm Nate, a cybersecurity professional and Oregon State University alum. This is my personal corner of the internet where I write about technology, everyday observations, and my consulting work.
+          {heroText}
         </motion.p>
         
         <motion.div variants={item} className="flex flex-wrap items-center gap-2">
@@ -88,7 +100,7 @@ export default function Home() {
             <span className="font-mono text-[10px] opacity-50">/ NOTES</span>
           </div>
           <p className="text-[14px] leading-[1.5] text-black/60 italic">
-            "Just finished migrating my home server to a new NAS setup. There's something incredibly satisfying about organizing your own digital space..."
+            {quickThought}
           </p>
         </motion.div>
 
