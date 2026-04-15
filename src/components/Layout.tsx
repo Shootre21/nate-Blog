@@ -4,16 +4,10 @@ import { cn } from "../lib/utils";
 import { Menu, X, Github } from "lucide-react";
 import { useState, useEffect } from "react";
 
-const navLinks = [
-  { name: "Home", path: "/" },
-  { name: "Blog", path: "/blog" },
-  { name: "My Stance", path: "/stance" },
-  { name: "Consulting", path: "/work" },
-];
-
 export default function Layout() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [navLinks, setNavLinks] = useState<any[]>([]);
   const location = useLocation();
 
   useEffect(() => {
@@ -27,6 +21,33 @@ export default function Layout() {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    fetch('/api/nav')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          setNavLinks(data);
+        } else {
+          setNavLinks([
+            { name: "Home", path: "/" },
+            { name: "Blog", path: "/blog" },
+            { name: "Cyber News", path: "/news" },
+            { name: "About Me", path: "/about" },
+            { name: "Consulting", path: "/work" },
+          ]);
+        }
+      })
+      .catch(() => {
+        setNavLinks([
+          { name: "Home", path: "/" },
+          { name: "Blog", path: "/blog" },
+          { name: "Cyber News", path: "/news" },
+          { name: "About Me", path: "/about" },
+          { name: "Consulting", path: "/work" },
+        ]);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-accent/20 selection:text-ink">

@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 const container = {
   hidden: { opacity: 0 },
@@ -18,6 +19,19 @@ const item = {
 };
 
 export default function Home() {
+  const [recentPosts, setRecentPosts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/posts')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          setRecentPosts(data.slice(0, 2));
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   return (
     <motion.div
       variants={container}
@@ -57,14 +71,14 @@ export default function Home() {
             <span className="font-mono text-[11px] uppercase tracking-[1.5px] opacity-50">Recent Posts</span>
             <span className="font-mono text-[10px] opacity-50">/ BLOG</span>
           </div>
-          <Link to="/blog" className="block text-ink mb-3 no-underline group">
-            <h3 className="font-fraunces text-[20px] font-normal mb-1 group-hover:text-accent transition-colors">My Everyday Carry: Tech Edition</h3>
-            <span className="font-mono text-[10px] opacity-50">04.12.2024 &middot; 5 MIN READ</span>
-          </Link>
-          <Link to="/blog" className="block text-ink mb-3 no-underline group">
-            <h3 className="font-fraunces text-[20px] font-normal mb-1 group-hover:text-accent transition-colors">Basic Security Hygiene for 2024</h3>
-            <span className="font-mono text-[10px] opacity-50">03.28.2024 &middot; 8 MIN READ</span>
-          </Link>
+          {recentPosts.length > 0 ? recentPosts.map(post => (
+            <Link key={post.id} to="/blog" className="block text-ink mb-3 no-underline group">
+              <h3 className="font-fraunces text-[20px] font-normal mb-1 group-hover:text-accent transition-colors">{post.title}</h3>
+              <span className="font-mono text-[10px] opacity-50">{post.date} &middot; {post.readTime}</span>
+            </Link>
+          )) : (
+            <p className="text-ink-light text-sm">No recent posts.</p>
+          )}
         </motion.div>
 
         {/* Community Module */}
@@ -81,9 +95,9 @@ export default function Home() {
         {/* Work Module */}
         <motion.div variants={item} className="bg-accent text-white p-6 rounded flex flex-col gap-3">
           <span className="font-mono text-[11px] uppercase tracking-[1.5px] text-white/70">Transparency</span>
-          <h2 className="font-fraunces text-[24px] font-normal">My Political Stance</h2>
+          <h2 className="font-fraunces text-[24px] font-normal">About Me</h2>
           <p className="text-[14px] leading-[1.4] opacity-90">While this blog focuses on tech and daily life, I believe in being upfront about my progressive values.</p>
-          <Link to="/stance" className="font-mono text-[11px] mt-2 text-white hover:opacity-80 transition-opacity">READ MORE &rarr;</Link>
+          <Link to="/about" className="font-mono text-[11px] mt-2 text-white hover:opacity-80 transition-opacity">READ MORE &rarr;</Link>
         </motion.div>
       </section>
     </motion.div>

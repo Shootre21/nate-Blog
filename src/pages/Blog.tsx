@@ -1,38 +1,26 @@
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-
-const articles = [
-  {
-    id: 1,
-    title: "My Everyday Carry: Tech Edition",
-    excerpt: "A breakdown of the gadgets, cables, and tools I carry with me every day as a cybersecurity professional.",
-    date: "2024-04-12",
-    readTime: "5 min read",
-    category: "Lifestyle",
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop"
-  },
-  {
-    id: 2,
-    title: "Basic Security Hygiene for 2024",
-    excerpt: "You don't need to be paranoid, but you do need a password manager. Here are the simple steps to secure your digital life.",
-    date: "2024-03-28",
-    readTime: "8 min read",
-    category: "Cybersecurity",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop"
-  },
-  {
-    id: 3,
-    title: "Thoughts on the Latest Web Frameworks",
-    excerpt: "React, Vue, Svelte... the landscape keeps changing. Here's what I'm using for my personal projects this year.",
-    date: "2024-02-10",
-    readTime: "6 min read",
-    category: "Tech",
-    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
-  }
-];
+import { useState, useEffect } from "react";
 
 export default function Blog() {
+  const [articles, setArticles] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/posts')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          setArticles(data);
+        } else {
+          setArticles([]);
+        }
+      })
+      .catch(() => {
+        setArticles([]);
+      });
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -78,7 +66,7 @@ export default function Blog() {
             <div className="md:col-span-7 order-1 md:order-2">
               <div className="aspect-[16/9] overflow-hidden rounded glass-panel p-2">
                 <img 
-                  src={article.image} 
+                  src={article.image || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop"} 
                   alt={article.title}
                   className="w-full h-full object-cover rounded-sm filter grayscale-[30%] contrast-125 group-hover:grayscale-0 transition-all duration-700"
                   referrerPolicy="no-referrer"
@@ -87,6 +75,9 @@ export default function Blog() {
             </div>
           </motion.article>
         ))}
+        {articles.length === 0 && (
+          <p className="text-ink-light">No posts found.</p>
+        )}
       </div>
     </motion.div>
   );

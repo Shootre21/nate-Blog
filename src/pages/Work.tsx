@@ -1,19 +1,19 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
-import { Plus, Minus, Mail, ArrowRight } from "lucide-react";
+import { Plus, Minus, Mail, ArrowRight, Github } from "lucide-react";
 
 const services = [
   {
-    id: "audit",
-    title: "Security Audits for Small Businesses",
-    description: "A comprehensive review of your organization's digital infrastructure. I help small businesses identify vulnerabilities in their identity management, data storage, and communication channels without the enterprise price tag.",
-    deliverables: ["Threat Model Document", "Prioritized Remediation Plan", "Architecture Diagram"]
+    id: "setup",
+    title: "Basic Security Setup & Vulnerability Check",
+    description: "I will check your current network and software for vulnerabilities, misconfigurations, and exposure. We'll implement basic security hygiene to protect your data without overcomplicating your workflow.",
+    deliverables: ["Network & Software Vulnerability Scan", "Basic Security Setup", "Remediation Checklist"]
   },
   {
-    id: "training",
-    title: "Security Awareness Training",
-    description: "Customized workshops for your team. We cover password hygiene, phishing awareness, and secure communications in a way that is accessible, actionable, and free of confusing jargon.",
-    deliverables: ["Customized Training Materials", "Interactive Workshop", "Post-Training Support"]
+    id: "awareness",
+    title: "Low Cost Cybersecurity Awareness",
+    description: "Customized training and resources for your team. We cover password hygiene, phishing awareness, and secure communications in a way that is accessible, actionable, and free of confusing jargon.",
+    deliverables: ["Printouts of what to look for", "Monthly security awareness emails", "Interactive Q&A Session"]
   },
   {
     id: "vCISO",
@@ -38,18 +38,28 @@ export default function Work() {
           <header className="py-16">
             <h1 className="font-fraunces text-4xl md:text-6xl mb-6 italic">Consulting</h1>
             <p className="text-lg text-ink-light leading-relaxed mb-8">
-              I provide practical, low-cost cybersecurity consulting for small businesses, non-profits, and independent creators.
+              I provide low cost cybersecurity awareness, and basic security setup for small businesses, non-profits, and independent creators.
             </p>
             <p className="text-ink-light leading-relaxed mb-12">
               My approach is rooted in common-sense defense. I don't sell expensive software; I help you build resilient systems using the tools you already have.
             </p>
             
-            <a 
-              href="mailto:hello@example.com"
-              className="inline-flex items-center gap-2 bg-ink text-cream px-8 py-4 rounded font-medium hover:bg-ink-light transition-colors"
-            >
-              <Mail className="w-5 h-5" /> Start a Conversation
-            </a>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a 
+                href="mailto:hello@example.com"
+                className="inline-flex items-center justify-center gap-2 bg-ink text-cream px-8 py-4 rounded font-medium hover:bg-ink-light transition-colors"
+              >
+                <Mail className="w-5 h-5" /> Start a Conversation
+              </a>
+              <a 
+                href="https://github.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 border border-border text-ink px-8 py-4 rounded font-medium hover:border-ink/30 transition-colors"
+              >
+                <Github className="w-5 h-5" /> View GitHub
+              </a>
+            </div>
           </header>
 
           <div className="aspect-[4/3] rounded overflow-hidden glass-panel p-2 hidden lg:block">

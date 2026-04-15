@@ -10,7 +10,7 @@ export default function Stance() {
       className="max-w-7xl mx-auto px-10"
     >
       <header className="py-16 max-w-3xl">
-        <h1 className="font-fraunces text-4xl md:text-6xl mb-6 italic">My Political Stance</h1>
+        <h1 className="font-fraunces text-4xl md:text-6xl mb-6 italic">About Me</h1>
         <p className="text-lg text-ink-light leading-relaxed">
           While my blog is mostly about technology and my daily life, I believe it's important to be transparent about the values that drive my work and worldview.
         </p>
